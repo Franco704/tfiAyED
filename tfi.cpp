@@ -45,7 +45,7 @@ struct time{
 };
 
 
-class UserSystem{
+class UserSystem{//Se pude definir clases en c?
     private:
     const char* Userarchive = "Usuarios.dat";
     struct Usuario usuarios[MAX_USERS];
