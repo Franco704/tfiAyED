@@ -1,4 +1,4 @@
-/*Libreriasa*/
+/*Librerias*/
 #include "tfi.h"
 #include <stdlib.h>
 #include <stdio.h>
