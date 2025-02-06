@@ -25,13 +25,14 @@ struct Usuario{
     char name[MAX_NAME];
     char pass[MAX_PASSW];
     char apynom[MAX_APyNOM];
-    /*Set para Usuarios y Contraseñas*/
+};
+   /*Set para Usuarios y Contraseñas*/
 void set_User(const char* user, const char* passw){
     strncpy(name, user, MAX_NAME - 1);
     name[MAX_NAME - 1] = '\0';
     strncpy(pass, passw, MAX_PASSW - 1);
     pass[MAX_PASSW - 1] = '\0';
-}
+
 };
 
 struct tool{
