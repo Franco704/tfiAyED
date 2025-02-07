@@ -12,9 +12,11 @@
 #define MIN_PASSW 6
 #define MAX_APyNOM 60
 #define MAX_CLASS 30
+const char* Userarchive = "Usuarios.dat";
+int numUser = 0;
 
 /*Estructura de las entidades*/
-struct docente{
+struct docente {
     int legajo;
     char apynom[MAX_APyNOM];
     char materia[MAX_CLASS];
@@ -25,14 +27,6 @@ struct Usuario{
     char name[MAX_NAME];
     char pass[MAX_PASSW];
     char apynom[MAX_APyNOM];
-};
-   /*Set para Usuarios y Contraseñas*/
-void set_User(const char* user, const char* passw){
-    strncpy(name, user, MAX_NAME - 1);
-    name[MAX_NAME - 1] = '\0';
-    strncpy(pass, passw, MAX_PASSW - 1);
-    pass[MAX_PASSW - 1] = '\0';
-
 };
 
 struct tool{
@@ -46,40 +40,54 @@ struct time{
 };
 
 
-class UserSystem{//Se pude definir clases en c?
-    private:
-    const char* Userarchive = "Usuarios.dat";
+struct _UserSystem {//cambio de clase a estructura
+    char* Userarchive;//="Usuarios.dat";
     struct Usuario usuarios[MAX_USERS];
-    int numUser = 0;
-    /*Carga de Usuarios*/
-    void load_User()
+    int numUser;//=0;
+};
+
+
+
+   /*Set para Usuarios y Contraseñas , modificacion se añadio los punteros que hagan referencia a la estructura usuario */
+void set_User(struct Usuario* user, const char* passw,const char* name){
+    strncpy(user->name, name, MAX_NAME - 1);
+    user->name[MAX_NAME - 1] = '\0';
+    strncpy(user->pass, passw, MAX_PASSW - 1);
+    user->pass[MAX_PASSW - 1] = '\0';
+
+};
+
+
+
+/*Carga de Usuarios, se anadio un puntero que apunte a la estructura(userSystem)*/ 
+    void load_User(struct UserSystem* userSystem)
     {
-        FILE* archivo = fopen(Userarchive, "rb");
+        FILE* archivo = fopen(userSystem->Userarchive, "rb");
         if(archivo != NULL)
         {
-            while(fread(&usuarios[numUser], sizeof(struct Usuario),1,archivo))
+            while(fread(&userSystem->usuarios[userSystem->numUser], sizeof(struct Usuario),1,archivo))
             {
-                numUser++;
-                if(numUser >= MAX_USERS) break;
+                userSystem->numUser++;
+                if(userSystem->numUser >= MAX_USERS) break;
             }
             fclose(archivo);
         }
     }
-    /*Guardado de Usuarios*/
-    void save_User()
+    /*Guardado de Usuarios, se anadio un puntero que apunte a la estructura(userSystem)*/
+    void save_User(struct UserSystem* userSystem)
     {
-        FILE* archivo = fopen(Userarchive, "wb");
+        FILE* archivo = fopen(userSystem->Userarchive, "wb");
         if(archivo != NULL)
         {
-            for(int i=0; i<numUser;i++)
+            for(int i=0; i<userSystem->numUser;i++)
             {
-                fwrite(&usuarios[i], sizeof(struct Usuario), 1, archivo);
+                fwrite(&userSystem->usuarios[i], sizeof(struct Usuario), 1, archivo);
             }
             fclose(archivo); // Mover fclose dentro del bloque if
         }
     }
-
-    bool uservalidate(const char* nombre)
+    /*Validacion de Usuario, se anadio un puntero que apunte a la estructura(userSystem)*/
+    bool uservalidate(struct UserSystem* userSystem,const char* nombre)
     {
         if (!islower(nombre[0]))
         {
@@ -117,10 +125,10 @@ class UserSystem{//Se pude definir clases en c?
         return true;
     }
 
-    bool passvalidate(const char* pass) {
+    bool passvalidate(struct UserSystem* userSystem,const char* pass) {
         int len = strlen(pass);
         if (len < MIN_PASSW || len > MAX_PASSW) {
-            printf("La contraseña debe tener entre 6 y 32 caracteres.\n");
+            printf("La contraseña debe tener entre %d y %d caracteres.\n", MIN_PASSW, MAX_PASSW);
             return false;
         }
 
@@ -158,8 +166,8 @@ class UserSystem{//Se pude definir clases en c?
         return true;
     }
     
-    /*Creación SU*/
-    void set_SU()
+    /*Creación SU, se añadio un putero a la funcion*/
+    void set_SU(struct UserSystem* userSystem)
     {
         char nombre[MAX_NAME], pass[MAX_PASSW];
         printf("Sistema de creación de SuperUsuario\n");
@@ -168,13 +176,19 @@ class UserSystem{//Se pude definir clases en c?
         printf("Ingrese la contraseña: ");
         scanf("%31s", pass);
 
-        if (uservalidate(nombre) && passvalidate(pass)) {
-            usuarios[numUser].set_User(nombre, pass);
-            numUser++;
-            save_User();
+        if (uservalidate(userSystem,nombre) && passvalidate(userSystem,pass)) {
+            set_User(&userSystem->usuarios[userSystem->numUser], nombre, pass);
+            userSystem->numUser++;
+            save_User(userSystem);
             printf("SuperUsuario creado exitosamente.\n");
         } else {
             printf("Error en la creación del SuperUsuario.\n");
         }
     }
-};
+    int main()
+    {
+        struct _UserSystem UserSystem;
+        UserSystem.Userarchive = "Usuarios.dat";
+        UserSystem.numUser = 0;
+        return 0;
+    }
