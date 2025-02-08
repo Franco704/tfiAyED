@@ -4,7 +4,9 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "C:/msys64/ucrt64/**"
+                "C:/msys64/ucrt64/**",
+                "/usr/include/gtk-3.0",
+                "/usr/include/glib-2.0"
             ],
             "defines": [
                 "_DEBUG",
